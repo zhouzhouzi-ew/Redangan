@@ -22,7 +22,6 @@ void URestartWidget::NativeOnInitialized()
 
 void URestartWidget::OnRestartClicked()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ป๎มห"));
 	ADialoguePlayerController* PlayerController=Cast<ADialoguePlayerController>(GetOwningPlayer());
 	if (PlayerController != nullptr)
 	{
