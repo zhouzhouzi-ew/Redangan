@@ -16,80 +16,40 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 //////////////////////////////////////////////////////////////////////////
 // AdanganronpaCharacter
 
-AdanganronpaCharacter::AdanganronpaCharacter()
+ADanganronpaCharacter::ADanganronpaCharacter()
 {
-	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
-		
-	// Create a CameraComponent	
-	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	FirstPersonCameraComponent->SetRelativeLocation(FVector(-10.f, 0.f, 60.f)); // Position the camera
-	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+    GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
-	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
-	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
-	Mesh1P->SetOnlyOwnerSee(true);
-	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
-	Mesh1P->bCastDynamicShadow = false;
-	Mesh1P->CastShadow = false;
-	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
-	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
+    FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+    FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
+    FirstPersonCameraComponent->SetRelativeLocation(FVector(-10.f, 0.f, 60.f));
+    FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
+    Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
+    Mesh1P->SetOnlyOwnerSee(true);
+    Mesh1P->SetupAttachment(FirstPersonCameraComponent);
+    Mesh1P->bCastDynamicShadow = false;
+    Mesh1P->CastShadow = false;
+    Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 }
 
-void AdanganronpaCharacter::BeginPlay()
+void ADanganronpaCharacter::Die()
 {
-	// Call the base class  
-	Super::BeginPlay();
+    if (ADialoguePlayerController* PC = Cast<ADialoguePlayerController>(GetController()))
+    {
+        PC->ShowRestartWidget();
+    }
+    // 可选：禁用输入、播放死亡动画等
+    DisableInput(nullptr);
 }
 
-//////////////////////////////////////////////////////////////////////////// Input
-
-void AdanganronpaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{	
-	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AdanganronpaCharacter::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AdanganronpaCharacter::Look);
-	}
-	else
-	{
-		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
-	}
-}
-
-
-void AdanganronpaCharacter::Move(const FInputActionValue& Value)
+void ADanganronpaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// add movement 
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
-	}
-}
-
-void AdanganronpaCharacter::Look(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-	}
+    if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+    {
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADanganronpaCharacter::Move);
+        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADanganronpaCharacter::Look);
+    }
 }
