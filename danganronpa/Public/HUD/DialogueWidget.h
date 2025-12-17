@@ -5,10 +5,12 @@
 #include "DTReader.h"
 #include "TimerManager.h"
 #include "DialogueWidget.generated.h"
+
 class UButton;
 class UTextBlock;
 class UWidgetAnimation;
 class UImage;
+
 /**
  *
  */
@@ -40,14 +42,14 @@ public:
 
 
 
-	// 绑定的TextBlock
+	// Bound TextBlock
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DialogueText;
-	int32 TextIndex;
+	int32 TextIndex = 0; // Ensure initialization
 	int32 InvesIndex = -1;
 	TArray<FDialogData*>Dialogues;
 	TArray<FDialogData*>Dialogues_Inves;
-	// TextBubble 控件
+	// TextBubble widget
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> TextBubble;
 
@@ -57,7 +59,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Paper;
 
-	// 各种角色立绘
+	// Character portraits
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Naegi_normal;
 
@@ -67,7 +69,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Naegi_confused;
 
-	// Classroom背景
+	// Classroom background
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Classroom;
 
@@ -91,14 +93,23 @@ private:
 	bool PaperRead = false;
 	bool CameraRead = false;
 	bool bIsAnimating = false;
+
+	//Refactored with Decorator Pattern
+	struct IDlgStep;
+	TUniquePtr<IDlgStep> RootStep; // Points to the first link in the decorator chain
+	struct FDlgContext;
+	TUniquePtr<FDlgContext> Ctx;   // Runtime context
+	void BuildPipeline();          // Function for assembling the decorator chain
+	
+
 	void SetTextAndBubbleHidden();
 
 	void SetTextAndBubbleVisible();
-	//获取定时器管理器
+	// Get timer handle
 	FTimerHandle TimerHandle1;
 	FTimerHandle TimerHandle2;
 	void InitializePortraits();
-	//让文本框重新出现且内容往前，delay为出现的延迟时间
+	// Set the text box delay time according to the passed negative delay value
 	void TextMoveOn(float delay);
 
 	TObjectPtr<UImage> CurrentPortrait;
@@ -107,4 +118,42 @@ private:
 	void SetPortraitHidden();
 	void PlayAnimate();
 	TObjectPtr<UDataTable> CurrentDialogue;
+};
+
+
+// Refactored with Decorator Pattern
+
+// Lightweight context for passing Widget pointer between decorators
+struct FDlgContext {
+    class UDialogueWidget* Widget = nullptr;
+};
+
+// Interface for all dialogue "steps"
+struct IDlgStep {
+    virtual ~IDlgStep() {}
+    virtual void Execute(FDlgContext& Ctx) = 0;
+};
+
+// Base class for all "wrappers" or "decorators"
+struct FDlgDecorator : public IDlgStep {
+    TUniquePtr<IDlgStep> Inner; // Holds the next step to be wrapped
+    explicit FDlgDecorator(TUniquePtr<IDlgStep> In) : Inner(MoveTemp(In)) {}
+    void Execute(FDlgContext& Ctx) override { if (Inner) Inner->Execute(Ctx); }
+};
+
+// Core step: only responsible for displaying the next text and advancing the index
+struct FCoreStep : public IDlgStep {
+    void Execute(FDlgContext& Ctx) override;
+};
+
+// Decorator #1: Block input if animation is playing
+struct FInputGuardDeco : public FDlgDecorator {
+    using FDlgDecorator::FDlgDecorator;
+    void Execute(FDlgContext& Ctx) override;
+};
+
+// Decorator #2: Handle display/hide of the character portrait for the current line
+struct FPortraitDeco : public FDlgDecorator {
+    using FDlgDecorator::FDlgDecorator;
+    void Execute(FDlgContext& Ctx) override;
 };
