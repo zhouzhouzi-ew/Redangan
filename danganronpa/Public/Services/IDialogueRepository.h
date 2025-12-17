@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 // 采用Service Locator模式重构：定义对话数据仓库接口
+// Refactored with Service Locator Pattern
 class IDialogueRepository
 {
 public:

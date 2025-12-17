@@ -3,8 +3,7 @@
 #include "CoreMinimal.h"
 #include "Containers/Map.h"
 
-// 采用Service Locator模式重构：集中管理“接口 → 实现”的注册与解析
-struct FServiceContext
+// 采用Service Locator模式重构：集中管理“接口 → 实现”的注册与解析// Refactored with Service Locator Patternstruct FServiceContext
 {
     FName LevelName;
     FString Mode; // e.g. "prod", "test"

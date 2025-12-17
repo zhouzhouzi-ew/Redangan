@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 
 // 采用Service Locator模式重构：定义UI工厂接口，调用方只依赖接口
+// Refactored with Service Locator Pattern
 class IWidgetFactory
 {
 public:
