@@ -1,6 +1,7 @@
 #include "DialoguePlayingState.h"
 #include "DialogueWidgetBase.h"
 
+//Refactored with State Pattern 
 void UDialoguePlayingState::EnterState(UDialogueWidgetBase* Widget)
 {
     Super::EnterState(Widget);

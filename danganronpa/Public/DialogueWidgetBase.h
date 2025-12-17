@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include"HUD/DTReader.h"
 #include "DialogueWidgetBase.generated.h"
+
+//Refactored with State Pattern 
 class UButton;
 class UTextBlock;
 class UWidgetAnimation;

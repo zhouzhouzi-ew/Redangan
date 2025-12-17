@@ -5,6 +5,7 @@
 #include "Components/Image.h"
 #include "TimerManager.h"
 
+//Refactored with State Pattern 
 void UBaseDialogueState::EnterState(UDialogueWidgetBase* Widget)
 {
     if (Widget)

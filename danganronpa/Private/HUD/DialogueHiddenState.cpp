@@ -2,6 +2,7 @@
 #include "DialogueWidgetBase.h"
 #include "TimerManager.h"
 
+//Refactored with State Pattern 
 void UDialogueHiddenState::EnterState(UDialogueWidgetBase* Widget)
 {
     Super::EnterState(Widget);

@@ -4,6 +4,7 @@
 #include "BaseDialogueState.h"
 #include "DialogueInvestigateState.generated.h"
 
+//Refactored with State Pattern 
 UCLASS()
 class DANGANRONPA_API UDialogueInvestigateState : public UBaseDialogueState
 {

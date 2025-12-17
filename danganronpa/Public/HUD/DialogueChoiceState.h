@@ -3,6 +3,7 @@
 #include "BaseDialogueState.h"
 #include "DialogueChoiceState.generated.h"
 
+//Refactored with State Pattern 
 UCLASS()
 class DANGANRONPA_API UDialogueChoiceState : public UBaseDialogueState
 {

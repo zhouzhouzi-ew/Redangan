@@ -4,6 +4,7 @@
 #include "BaseDialogueState.h"
 #include "DialogueHiddenState.generated.h"
 
+//Refactored with State Pattern 
 UCLASS()
 class DANGANRONPA_API UDialogueHiddenState : public UBaseDialogueState
 {
@@ -13,7 +14,7 @@ public:
     virtual void EnterState(class UDialogueWidgetBase* Widget) override;
     virtual void HandleBubbleClick(class UDialogueWidgetBase* Widget) override;
     virtual FString GetStateName() const override { return TEXT("Hidden"); }
-
+    
     // 设置延迟后自动返回播放状态
     void SetAutoReturnDelay(float DelaySeconds);
 

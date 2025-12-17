@@ -6,6 +6,7 @@
 #include "DTReader.h"
 #include "DialogueState.generated.h"
 
+//Refactored with State Pattern 
 UINTERFACE(MinimalAPI)
 class UDialogueState : public UInterface
 {

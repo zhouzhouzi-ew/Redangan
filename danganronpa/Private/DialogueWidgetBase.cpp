@@ -8,6 +8,8 @@
 #include"HUD/KototamaWidget.h"
 #include<GeneralController.h>
 #include "Kismet/GameplayStatics.h"
+
+//Refactored with State Pattern 
 void UDialogueWidgetBase::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
