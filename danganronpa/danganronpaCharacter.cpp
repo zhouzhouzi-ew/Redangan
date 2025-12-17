@@ -1,5 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-
+//Refactored with adaptor Pattern
 #include "danganronpaCharacter.h"
 #include "danganronpaProjectile.h"
 #include "Animation/AnimInstance.h"

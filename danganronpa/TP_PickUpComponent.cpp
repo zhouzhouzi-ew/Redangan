@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "TP_PickUpComponent.h"
-
+//Refactored with adaptor Pattern
 UTP_PickUpComponent::UTP_PickUpComponent()
 {
 	// Setup the Sphere Collision

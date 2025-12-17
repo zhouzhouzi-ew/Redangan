@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "RestartWidget.generated.h"
-
+//Refactored with adaptor Pattern
 
 class UButton;
 /**

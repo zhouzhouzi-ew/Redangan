@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "WeaponComponent.generated.h"
-
+//Refactored with adaptor Pattern
 class ADanganronpaCharacter;
 class ADanganronpaProjectile;
 class UInputMappingContext;
