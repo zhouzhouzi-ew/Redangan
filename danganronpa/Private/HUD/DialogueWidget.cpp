@@ -19,91 +19,34 @@ void UDialogueWidget::NativeOnInitialized()
 
 	if (MyDialogue)
 	{
-		MyDialogue->GetAllRows(ContextString, Dialogues);//Dialogues已获取DataTable所有行信息
-		FDialogData* _data = MyDialogue->FindRow< FDialogData>(_rowname, ContextString, false);//false代表不报错
-		// 更新文本框内容
-		DialogueText->SetText(FText::FromString(Dialogues[TextIndex]->DialogueText));
+		MyDialogue->GetAllRows(ContextString, Dialogues);//Dialogues has obtained all information of DataTable
+		FDialogData* _data = MyDialogue->FindRow< FDialogData>(_rowname, ContextString, false);//false means optional
+		// Set initial text
+		if (Dialogues.IsValidIndex(TextIndex))
+        {
+		    DialogueText->SetText(FText::FromString(Dialogues[TextIndex]->DialogueText));
+        }
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("No connected DT"));
 	}
+
+    // Refactored with Decorator Pattern
+    BuildPipeline(); // Assemble decorator chain
+    Ctx = MakeUnique<FDlgContext>(); // Create context object
+    Ctx->Widget = this; // Initialize context
+    
 }
 
+// Refactored with Decorator Pattern
 void UDialogueWidget::OnBubbleClicked()
 {
-	if (bIsAnimating) {
-		// 如果正在播放动画，直接返回，避免重复触发
-		UE_LOG(LogTemp, Warning, TEXT("Animation is in progress. Ignoring further clicks."));
-		return;
-	}
-
-	if (TextIndex < Dialogues.Num()) {
-		if (Dialogues[TextIndex]->out) {
-			UE_LOG(LogTemp, Warning, TEXT("Sensed Out"));
-			SetPortraitHidden();
-			SetTextAndBubbleHidden();
-
-			if (InMainDialogue) {
-				if (TextIndex == 2) {
-					InvestigatePhase = true;
-				}
-				if (TextIndex == Dialogues.Num() - 1 && InvestigatePhase && PaperRead && CameraRead) {
-					PlayAnimate();
-					InvestigatePhase = false;
-				}
-				else if (TextIndex == 3) {
-					bIsAnimating = true; // 标记动画正在播放
-
-					// 播放隐藏动画
-					PlayAnimation(BroadcastFade);
-					SetTextAndBubbleHidden();
-
-					// 延迟切换到 MyDialogue 的第三句话
-					GetWorld()->GetTimerManager().SetTimer(
-						TimerHandle1,
-						[this]() {
-							// 显示第三句话
-							TextIndex = 4;
-							DialogueText->SetText(FText::FromString(Dialogues[TextIndex]->DialogueText));
-
-							// 播放显示动画并显示对话框
-							SetTextAndBubbleVisible();
-							SetPortraitVisible();
-							// 动画播放完成，重置标记
-							bIsAnimating = false;
-						},
-						2.0f, // 延迟 1 秒
-						false
-					);
-				}
-				else if (TextIndex == 4) {
-					// 对话结束，切换到新的关卡
-					TextIndex = -1;
-					UE_LOG(LogTemp, Warning, TEXT("Dialogue Finished. Loading Map_Playground..."));
-					UGameplayStatics::OpenLevel(this, FName("FirstPersonMap"));
-				}
-			}
-		}
-		// 如果有新立绘
-		else if (Dialogues[TextIndex + 1]->intro) {
-			SetPortraitHidden();
-			TextIndex++;
-			SetPortraitVisible();
-			DialogueText->SetText(FText::FromString(Dialogues[TextIndex]->DialogueText));
-		}
-		// 正常显示下一句
-		else {
-			DialogueText->SetText(FText::FromString(Dialogues[++TextIndex]->DialogueText));
-		}
-	}
-	else if (InvestigatePhase) {
-		// ...
-	}
-	else {
-
-	}
+    // Complex logic is now delegated to the decorator chain
+    if (RootStep)
+    {
+        RootStep->Execute(*Ctx);
+    }
 }
-
 
 
 
@@ -123,37 +66,30 @@ void UDialogueWidget::OnCameraClicked()
 
 void UDialogueWidget::OnPaperClicked()
 {
-	TextIndex = -1; // 重置对话索引
-	PaperRead = true; // 标记 Paper 对话已读
+	TextIndex = -1; // Reset dialogue index
+	PaperRead = true; // Mark Paper dialogue as read
 
 	if (InvestigatePhase) {
 		FString ContextString = TEXT("TEST");
 		Dialogues.Empty();
 		PaperDialogue->GetAllRows(ContextString, Dialogues);
 
-		// 显示 Paper 对话的第一句话
+		// Display the first sentence of Paper dialogue
 		SetTextAndBubbleVisible();
 		DialogueText->SetText(FText::FromString(Dialogues[++TextIndex]->DialogueText));
-
-		// 播放动画逻辑由 OnBubbleClicked 继续处理
 	}
 }
-
-
-
 
 void UDialogueWidget::PlayAnimate()
 {
 	if (PaperRead && CameraRead) {
-		TextMoveOn(0.0f); // 延迟处理其他逻辑
+		TextMoveOn(0.0f); // Trigger subsequent logic with delay
 	}
 }
 
-
-
 void UDialogueWidget::SetTextAndBubbleHidden()
 {
-	TextBubble->SetVisibility(ESlateVisibility::Hidden);//按钮不可见且不可交互
+	TextBubble->SetVisibility(ESlateVisibility::Hidden);//Button invisibility can also be set
 	DialogueText->SetVisibility(ESlateVisibility::Hidden);
 }
 
@@ -181,21 +117,21 @@ void UDialogueWidget::InitializePortraits()
 
 void UDialogueWidget::TextMoveOn(float delay)
 {
-	// 确保 TextIndex 定位到编号为 3 的对话
+	// Ensure TextIndex locates to the dialogue with index 3
 	int32 TargetIndex = 3;
 
-	// 检查 Dialogues 是否有效并包含索引为 3 和 4 的内容
+	// Check if Dialogues is valid and elements with index 3 and 4 exist
 	if (MyDialogue) {
 		FString ContextString = TEXT("TEST");
 		Dialogues.Empty();
 		MyDialogue->GetAllRows(ContextString, Dialogues);
 
 		if (Dialogues.IsValidIndex(TargetIndex) && Dialogues.IsValidIndex(TargetIndex + 1)) {
-			// 显示第 3 行对话
+			// Display the 3rd dialogue
 			TextIndex = TargetIndex;
 			DialogueText->SetText(FText::FromString(Dialogues[TextIndex]->DialogueText));
 
-			// 播放出现动画并显示对话框
+			// Play animation and display dialogue
 			PlayAnimation(BroadcastAppear);
 			SetTextAndBubbleVisible();
 		}
@@ -208,21 +144,23 @@ void UDialogueWidget::TextMoveOn(float delay)
 	}
 }
 
-
-
 void UDialogueWidget::SetPortraitVisible()
 {
+	if (!Dialogues.IsValidIndex(TextIndex)) return;
+
 	UE_LOG(LogTemp, Warning, TEXT("SettingPortraitVisible"));
 	CurrentPortrait = Cast<UImage>(GetWidgetFromName(FName(Dialogues[TextIndex]->CharacterName)));
-	//获取当前在说话的立绘名
+	//Get the name of the current speaker
 	if (CurrentPortrait)
 		CurrentPortrait->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UDialogueWidget::SetPortraitHidden()
 {
+    if (!Dialogues.IsValidIndex(TextIndex)) return;
+
 	CurrentPortrait = Cast<UImage>(GetWidgetFromName(FName(Dialogues[TextIndex]->CharacterName)));
-	//获取当前在说话的立绘名
+	//Get the name of the current speaker
 	if (CurrentPortrait)
 		CurrentPortrait->SetVisibility(ESlateVisibility::Hidden);
 }
@@ -230,4 +168,71 @@ void UDialogueWidget::SetPortraitHidden()
 
 
 
+//Refactored with Decorator Pattern
+
+void UDialogueWidget::BuildPipeline()
+{
+    // Assemble decorator chain, order: from inside to outside
+    // 1. Core is "display text and advance"
+    TUniquePtr<IDlgStep> Core = MakeUnique<FCoreStep>();
+    // 2. Wrap core with "portrait processor"
+    TUniquePtr<IDlgStep> WithPortrait = MakeUnique<FPortraitDeco>(MoveTemp(Core));
+    // 3. Wrap outermost layer with "input guard", called first
+    TUniquePtr<IDlgStep> WithGuard = MakeUnique<FInputGuardDeco>(MoveTemp(WithPortrait));
+
+    // Save the outermost decorator as the entry point
+    RootStep = MoveTemp(WithGuard);
+}
+
+// Core step: display text and advance index
+void FCoreStep::Execute(FDlgContext& Ctx)
+{
+    if (!Ctx.Widget) return;
+    UDialogueWidget* W = Ctx.Widget;
+
+    // Check if index is valid
+    if (W->Dialogues.IsValidIndex(W->TextIndex))
+    {
+        // Only responsible for displaying text and advancing index
+        W->DialogueText->SetText(FText::FromString(W->Dialogues[W->TextIndex]->DialogueText));
+        W->TextIndex++; // Core: index +1
+    }
+    else
+    {
+        // If dialogue ends, you can add an end logic, left blank for now
+        UE_LOG(LogTemp, Warning, TEXT("Dialogue ended or invalid index."));
+        // Example: W->GetWorld()->GetFirstPlayerController<ADialoguePlayerController>()->EndDialogue();
+    }
+}
+
+// Input guard: prohibit advancing during animation playback
+void FInputGuardDeco::Execute(FDlgContext& Ctx)
+{
+    if (!Ctx.Widget) return;
+    // If animation is playing, return directly without executing subsequent steps
+    if (Ctx.Widget->bIsAnimating)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Input blocked by FInputGuardDeco."));
+        return;
+    }
+    // Otherwise, execute the wrapped steps normally
+    FDlgDecorator::Execute(Ctx);
+}
+
+// Portrait processing: display and hide the character portrait of the current line
+void FPortraitDeco::Execute(FDlgContext& Ctx)
+{
+    if (!Ctx.Widget) return;
+    UDialogueWidget* W = Ctx.Widget;
+
+    // Display portrait before executing core steps
+    // Note: Logic is simplified here, intro/out processing is not handled. Can be added as new decorators later.
+    W->SetPortraitVisible();
+
+    // Execute wrapped steps (e.g. FCoreStep)
+    FDlgDecorator::Execute(Ctx);
+
+    // After core steps are executed, portrait can be hidden if needed
+    // W->SetPortraitHidden();
+}
 
