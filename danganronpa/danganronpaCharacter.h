@@ -1,5 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-
+//Refactored with adaptor Pattern
 #pragma once
 
 #include "CoreMinimal.h"

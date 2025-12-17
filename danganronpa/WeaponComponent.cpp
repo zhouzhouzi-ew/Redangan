@@ -7,7 +7,7 @@
 #include "Animation/AnimInstance.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
-
+//Refactored with adaptor Pattern
 UWeaponComponent::UWeaponComponent()
 {
     // 默认值已在头文件中设置

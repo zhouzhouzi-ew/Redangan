@@ -1,75 +1,75 @@
 #include "MyTriggerBox.h"
 #include "../Public/MyCharacter.h"
-#include "../danganronpaProjectile.h"  // °üº¬×Óµ¯ÀàÍ·ÎÄ¼þ
+#include "../danganronpaProjectile.h"  // ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
-
-// ¹¹Ôìº¯Êý
+//Refactored with adaptor Pattern
+// ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 AMyTriggerBox::AMyTriggerBox()
 {
-    // ³õÊ¼»¯´¥·¢¿ò
+    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
     RootComponent = TriggerBox;
 
-    // ÉèÖÃ´¥·¢¿òÅö×²ÊôÐÔ
+    // ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½
     TriggerBox->SetCollisionProfileName(TEXT("Trigger"));
     TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AMyTriggerBox::OnOverlapBegin);
 }
 
-// µ±ÖØµþ·¢ÉúÊ±µÄ»Øµ÷º¯Êý
+// ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ä»Øµï¿½ï¿½ï¿½ï¿½ï¿½
 void AMyTriggerBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
     bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (OtherActor && OtherActor->IsA(AdanganronpaProjectile::StaticClass())) // ÅÐ¶ÏÊÇ·ñÎª×Óµ¯
+    if (OtherActor && OtherActor->IsA(AdanganronpaProjectile::StaticClass())) // ï¿½Ð¶ï¿½ï¿½Ç·ï¿½Îªï¿½Óµï¿½
     {
-        UE_LOG(LogTemp, Warning, TEXT("×Óµ¯Óë´¥·¢¿ò·¢ÉúÅö×²"));
+        UE_LOG(LogTemp, Warning, TEXT("ï¿½Óµï¿½ï¿½ë´¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²"));
 
-        // Ö´ÐÐÏàÓ¦µÄ´¥·¢ÊÂ¼þ
-        OnTriggerHit();  // Ö´ÐÐ´¥·¢¿òÊÂ¼þ
+        // Ö´ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ä´ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
+        OnTriggerHit();  // Ö´ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
     }
 }
 
-// ¸ù¾Ý´¥·¢¿òÖ´ÐÐ²»Í¬µÄÂß¼­
+// ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð²ï¿½Í¬ï¿½ï¿½ï¿½ß¼ï¿½
 void AMyTriggerBox::OnTriggerHit()
 {
-    // Äã¿ÉÒÔ¸ù¾Ý´¥·¢¿òµÄÃû³Æ»òÆäËûÊôÐÔÖ´ÐÐ²»Í¬µÄÂß¼­
+    // ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½Ý´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð²ï¿½Í¬ï¿½ï¿½ï¿½ß¼ï¿½
     if (this->GetName() == TEXT("triggerFalse"))
     {
-        UE_LOG(LogTemp, Warning, TEXT("False ±»´¥·¢"));
+        UE_LOG(LogTemp, Warning, TEXT("False ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
         TriggerDeath();
-        // ´¥·¢¿ò1µÄÂß¼­
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ß¼ï¿½
     }
     else if (this->GetName() == TEXT("triggerRight"))
     {
-        // Ö´ÐÐ´ò¿ªÏÂÒ»¸ö¹Ø¿¨µÄ²Ù×÷
+        // Ö´ï¿½Ð´ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ø¿ï¿½ï¿½Ä²ï¿½ï¿½ï¿½
         UGameplayStatics::OpenLevel(this, FName("dialogueEndStage"));
 
-        UE_LOG(LogTemp, Warning, TEXT("Right ±»´¥·¢"));
-        // ´¥·¢¿ò2µÄÂß¼­
+        UE_LOG(LogTemp, Warning, TEXT("Right ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ß¼ï¿½
     }
 }
 
 void AMyTriggerBox::TriggerDeath()
 {
-    // »ñÈ¡µ±Ç°Íæ¼Ò¿ØÖÆÆ÷
+    // ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½Ò¿ï¿½ï¿½ï¿½ï¿½ï¿½
     APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
     if (PlayerController)
     {
-        // »ñÈ¡µ±Ç°Íæ¼Ò¿ØÖÆµÄ½ÇÉ«
+        // ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½Ò¿ï¿½ï¿½ÆµÄ½ï¿½É«
         AMyCharacter* MyCharacter = Cast<AMyCharacter>(PlayerController->GetPawn());
 
-        // Èç¹û³É¹¦×ª»»Îª MyCharacter£¬µ÷ÓÃÆäËÀÍöº¯Êý
+        // ï¿½ï¿½ï¿½ï¿½É¹ï¿½×ªï¿½ï¿½Îª MyCharacterï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (MyCharacter)
         {
-            MyCharacter->Death(); // µ÷ÓÃËÀÍöº¯Êý
+            MyCharacter->Death(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
     }
 }
 
 void AMyTriggerBox::OpenNextLevel()
 {
-    // ¼ÓÔØ Dialogue2 ¹Ø¿¨
+    // ï¿½ï¿½ï¿½ï¿½ Dialogue2 ï¿½Ø¿ï¿½
     UGameplayStatics::OpenLevel(this, TEXT("Dialogue2"));
 }
 
