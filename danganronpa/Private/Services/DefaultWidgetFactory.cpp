@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 
 // 采用Service Locator模式重构：默认UI工厂实现（示例，不要求可运行）
+// Refactored with Service Locator Pattern
 class FDefaultWidgetFactory : public IWidgetFactory
 {
 public:

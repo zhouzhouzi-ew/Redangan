@@ -11,6 +11,7 @@
 #include <Services/ServiceLocator.h>
 #include <Services/IWidgetFactory.h>
 // 采用Builder模式重构：通过统一的Builder/Director创建并初始化关卡UI
+// Refactored with Builder Pattern
 void ANaegiController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,6 +24,7 @@ void ANaegiController::BeginPlay()
 void ANaegiController::CreateDialogueWidget()
 {
 	// 采用Builder模式重构：避免控制器内多分支的CreateWidget与初始化细节
+	// Refactored with Builder Pattern
 	const FName CurrentLevel = *UGameplayStatics::GetCurrentLevelName(this);
 	FWidgetBuildDirector Director(GetWorld(), this);
 
@@ -31,6 +33,7 @@ void ANaegiController::CreateDialogueWidget()
 	UUserWidget* BuiltWidget = BuildLevelWidget(GetWorld(), this);
 
 	// 采用Service Locator模式重构：示例通过定位器解析UI工厂（逻辑演示）
+	// Refactored with Service Locator Pattern
 	FServiceContext Ctx{ CurrentLevel, TEXT("prod") };
 	IWidgetFactory* Factory = ServiceLocator::Resolve<IWidgetFactory>(Ctx);
 	// 注意：此处仅演示接口解析，不要求实际调用

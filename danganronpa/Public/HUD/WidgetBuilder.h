@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 
 // 采用Builder模式重构：Builder接口定义分步骤创建并初始化Widget
+// Refactored with Builder Pattern
 class IWidgetBuilder
 {
 public:
@@ -18,6 +19,7 @@ public:
 };
 
 // 采用Builder模式重构：Director负责按统一流程驱动具体Builder
+// Refactored with Builder Pattern
 class FWidgetBuildDirector
 {
 public:

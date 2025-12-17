@@ -9,10 +9,12 @@
 #include "HUD/BedroomAfterWidget.h"
 
 // 采用Builder模式重构：针对不同关卡的Widget由各具体Builder负责创建与初始化
+// Refactored with Builder Pattern
 namespace WidgetBuilders
 {
     // 抽象基类的一个通用实现骨架（可复用步骤）
     // 采用Builder模式重构：BaseBuilder复用通用构建步骤
+    // Refactored with Builder Pattern
     class FBaseWidgetBuilder : public IWidgetBuilder
     {
     public:
@@ -47,6 +49,7 @@ namespace WidgetBuilders
 
     // 各关卡的具体 Builder
     // 采用Builder模式重构：课堂关卡Widget的具体Builder
+    // Refactored with Builder Pattern
     class FClassroomDialogueBuilder : public FBaseWidgetBuilder
     {
     public:
@@ -70,6 +73,7 @@ namespace WidgetBuilders
     };
 
     // 采用Builder模式重构：操场关卡Widget的具体Builder
+    // Refactored with Builder Pattern
     class FPlaygroundBuilder : public FBaseWidgetBuilder
     {
     public:
@@ -92,6 +96,7 @@ namespace WidgetBuilders
     };
 
     // 采用Builder模式重构：背包关卡Widget的具体Builder
+    // Refactored with Builder Pattern
     class FInventoryBuilder : public FBaseWidgetBuilder
     {
     public:
@@ -114,6 +119,7 @@ namespace WidgetBuilders
     };
 
     // 采用Builder模式重构：卧室剧情Widget的具体Builder
+    // Refactored with Builder Pattern
     class FBedroomAfterBuilder : public FBaseWidgetBuilder
     {
     public:
@@ -138,6 +144,7 @@ namespace WidgetBuilders
 
 // 一个选择器函数（示例）供控制器选择具体 Builder
 // 采用Builder模式重构：根据关卡选择具体Builder的工厂/选择器
+// Refactored with Builder Pattern
 static TUniquePtr<IWidgetBuilder> SelectBuilderByLevel(FName LevelName)
 {
     using namespace WidgetBuilders;
@@ -162,6 +169,7 @@ static TUniquePtr<IWidgetBuilder> SelectBuilderByLevel(FName LevelName)
 
 // 供外部使用的统一入口
 // 采用Builder模式重构：统一入口由Director按步骤完成构建
+// Refactored with Builder Pattern
 UUserWidget* BuildLevelWidget(UWorld* World, APlayerController* PC)
 {
     const FName CurrentLevel = *UGameplayStatics::GetCurrentLevelName(World);

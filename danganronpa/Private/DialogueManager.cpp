@@ -7,7 +7,8 @@
 #include "Events/EventBus.h"
 
 
-// 采用Service Locator模式重构：通过仓库接口获取下一条对话（示例，逻辑演示）
+// 采用Service Locator模式重构：通过仓库接口获取下一条对话
+// Refactored with Service Locator Pattern
 bool ADialogueManager::GetNextDialogue(FString& OutCharacterName, FString& OutDialogueText, UTexture2D*& OutCharacterImage)
 {
     FServiceContext Ctx{ *UGameplayStatics::GetCurrentLevelName(this), TEXT("prod") };
